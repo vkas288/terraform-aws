@@ -1,2 +1,6 @@
 terraform.exe
 credentials.csv
+variable.tf 
+.terraform/ 
+terraform.tfstate 
+terraform.tfstate.backup 
