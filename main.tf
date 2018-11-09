@@ -1,8 +1,10 @@
-# Configure the AWS Provider
-provider "aws" {
-	access_key = "${var.aws_access_key}"
-	secret_key = "${var.aws_secret_key}"
-	region     = "us-east-2"
+data "terraform_remote_state" "state_file" {
+	backend = "s3"
+	config {
+		bucket	= "vkas-test-bucket"
+		key		= "terraform_s3.tfstate"
+		region  = "us-east-2"
+	}
 }
 
 # Create a web server
@@ -16,7 +18,7 @@ resource "aws_instance" "web" {
 }
 
 # Create security group
-resource "aws_security_group" "terra_sg" {
+resource "aws_security_group" "terra_sg" {	
 	name	= "terra_sg"
 	description	= "allow all inbound traffic"
 	tags {
@@ -26,12 +28,12 @@ resource "aws_security_group" "terra_sg" {
 		from_port	= 22
 		to_port		= 22
 		protocol	= "tcp"
-		cidr_blocks	= ["122.98.9.226/32"]
+		cidr_blocks	= ["110.225.242.177/32"]
 	}
 	egress {
 		from_port	= 0
 		to_port		= 0
 		protocol	= "-1"
 		cidr_blocks	= ["0.0.0.0/0"]
-  }
+	}
 }
