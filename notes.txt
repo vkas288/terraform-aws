@@ -80,6 +80,45 @@ output "addresses" {
 The terraform configuration section is used to configure Terraform itself, such as requiring a minimum Terraform version to execute a configuration.
 The currently only allowed configurations within this block are required_version and backend
 No value within the terraform block can use interpolations. The terraform block is loaded very early in the execution of Terraform and interpolations are not yet available.
+
+# File Provisioner
+The file provisioner is used to copy files or directories from the machine executing Terraform to the newly created resource.
+following arguments are supported- source, content, destination
+
+# Provisioner Connections
+provisioner "file" {
+  source      = "conf/myapp.conf"
+  destination = "/etc/myapp.conf"
+  connection {
+    type     = "ssh"
+    user     = "root"
+    password = "${var.root_password}"
+  }
+}
+
+# local-exec Provisioner
+The local-exec provisioner invokes a local executable after a resource is created.
+resource "aws_instance" "web" {
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.web.private_ip} >> private_ips.txt"
+  }
+}
+
+# remote-exec Provisioner
+The remote-exec provisioner invokes a script on a remote resource after it is created. This can be used to run a configuration management tool, bootstrap into a cluster, etc.
+The following arguments are supported- inline, script, scripts 
+resource "aws_instance" "web" {
+  provisioner "file" {
+    source      = "script.sh"
+    destination = "/tmp/script.sh"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/script.sh",
+      "/tmp/script.sh args",
+    ]
+  }
+}
     
 terraform init
 terraform plan
