@@ -119,7 +119,20 @@ resource "aws_instance" "web" {
     ]
   }
 }
-    
+
+# Implicit and Explicit Dependencies
+
+# Tainted resource
+If a resource successfully creates but fails during provisioning, Terraform will error and mark the resource as "tainted".
+A resource that is tainted has been physically created, but can't be considered safe to use since provisioning failed.
+On next execution plan, Terraform will not attempt to restart provisioning on the same resource because it isn't guaranteed to be safe. Instead, Terraform will remove any tainted resources and create new resources, attempting to provision them again after creation.
+Terraform also does not automatically roll back and destroy the resource during the apply when the failure happens, because that would go against the execution plan
+The execution plan would've said a resource will be created, but does not say it will ever be deleted. If you create an execution plan with a tainted resource, however, the plan will clearly state that the resource will be destroyed because it is tainted.
+
+# Module
+Whenever adding a new module, don’t forget to run “terraform get”
+
+# Terraform commands
 terraform init
 terraform plan
 terraform apply
@@ -131,23 +144,3 @@ terraform get
 terraform graph
 
 https://blog.gruntwork.io/why-we-use-terraform-and-not-chef-puppet-ansible-saltstack-or-cloudformation-7989dad2865c
-
-
-Implicit and Explicit Dependencies
-
-If a resource successfully creates but fails during provisioning, Terraform will error and mark the resource as "tainted". A resource that is tainted has been physically created, but can't be considered safe to use since provisioning failed.
-When you generate your next execution plan, Terraform will not attempt to restart provisioning on the same resource because it isn't guaranteed to be safe. Instead, Terraform will remove any tainted resources and create new resources, attempting to provision them again after creation.
-Terraform also does not automatically roll back and destroy the resource during the apply when the failure happens, because that would go against the execution plan: the execution plan would've said a resource will be created, but does not say it will ever be deleted. If you create an execution plan with a tainted resource, however, the plan will clearly state that the resource will be destroyed because it is tainted.
-
-For all files which match terraform.tfvars or *.auto.tfvars present in the current directory, Terraform automatically loads them to populate variables. If the file is named something else, you can use the -var-file flag directly to specify a file. These files are the same syntax as Terraform configuration files. And like Terraform configuration files, these files can also be JSON.
-
-We don't recommend saving usernames and password to version control, but you can create a local secret variables file and use -var-file to load it.
-
-You can use multiple -var-file arguments in a single command, with some checked in to version control and others not checked in. For example:
-
-$ terraform apply \
-  -var-file="secret.tfvars" \
-  -var-file="production.tfvars"
-  
-  The only thing that’s different about a module is that whenever you add one to a Terraform project, you need to run the “get” command before you run “plan” or “apply”:
-  Whenever adding a new module, don’t forget to run “terraform get”:
