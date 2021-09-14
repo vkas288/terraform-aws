@@ -8,11 +8,7 @@ terraform {
   }
 }
 
-provider "aws" {
-  # version = "~> 3.0" # this is possible and not recommended here
-  alias   = "useast1"
-  region  = "us-east-1"
-}
+provider "aws" {}
 
 data "aws_ami" "web_ami" {
   most_recent = true
