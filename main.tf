@@ -24,7 +24,7 @@ resource "aws_instance" "web" {
   ami           = data.aws_ami.web_ami.id
   instance_type = lookup(var.instance_type, terraform.workspace)
 
-  count = var.instance_type == "t2.micro" ? 1 : 0
+  #count = var.instance_type == "t2.micro" ? 1 : 0
 }
 
 output "instance_id" {
